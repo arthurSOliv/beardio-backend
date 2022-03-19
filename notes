@@ -1,0 +1,12 @@
+--------------------------BACKEND----------------------------
+1 - yarn init -y
+2 - yarn add express
+3 - yarn add typescript -D
+5 - yarn tsc --init
+6 - Create folders SRC and file server.ts
+7 - Set rootDir as ./src and outDir as ./dist on tsconfig.json
+8 - yarn add @types/express -D
+9 - create script build on package.json
+10 - yarn add ts-node-dev -D
+11 - create script dev:server on package.json
+12 - yarn add uuidv4
