@@ -5,24 +5,20 @@ import AuthenticateUserService from "../services/AuthenticateUserService";
 const sessionsRouter = Router();
 
 sessionsRouter.post('/', async (request, response) => {
-    try {
-        const { cpf, cnpj, password } = request.body;
+    const { cpf, cnpj, password } = request.body;
 
-        const authenticateUser = new AuthenticateUserService();
+    const authenticateUser = new AuthenticateUserService();
 
-        const { user, token } = await authenticateUser.execute({
-            cpf,
-            cnpj,
-            password
-        });
+    const { user, token } = await authenticateUser.execute({
+        cpf,
+        cnpj,
+        password
+    });
 
-        // @ts-expect-error
-        delete user.password;
-            
-        return response.json({ user, token });
-    } catch (err: any) {
-        return response.status(400).json({ error: err.message });
-    }
+    // @ts-expect-error
+    delete user.password;
+        
+    return response.json({ user, token });
 })
 
 export default sessionsRouter;

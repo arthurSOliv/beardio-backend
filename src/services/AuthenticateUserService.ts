@@ -7,6 +7,8 @@ import Provider from "../models/Provider";
 
 import authConfig from "../config/auth";
 
+import AppError from '../errors/AppError';
+
 interface Request {
     cpf: string;
     cnpj: string;
@@ -40,13 +42,13 @@ class AuthenticateUserService {
         }
 
         if (!user) {
-            throw new Error("Incorreta combinação de email/senha.");
+            throw new AppError("Incorreta combinação de email/senha.", 401);
         }
 
         const passwordMatched = await compare(password, user.user.password);
 
         if (!passwordMatched) {
-            throw new Error("Incorreta combinação de email/senha.");
+            throw new AppError("Incorreta combinação de email/senha.", 401);
         }
 
         const token = sign({}, authConfig.jwt.secret, {

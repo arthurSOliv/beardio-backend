@@ -4,6 +4,8 @@ import { hash } from 'bcryptjs';
 import User from "../models/User";
 import Client from "../models/Client";
 
+import AppError from '../errors/AppError';
+
 interface Request {
     name: string;
     email: string;
@@ -34,11 +36,11 @@ class CreateClientService {
         });
 
         if (checkClientExists) {
-            throw new Error('CPF já usado por outro usuário');
+            throw new AppError('CPF já usado por outro usuário');
         }
 
         if (checkUserExists) {
-            throw new Error('Email já usado por outro usuário');
+            throw new AppError('Email já usado por outro usuário');
         }
 
         const hashedPassword = await hash(password, 8);
