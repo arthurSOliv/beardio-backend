@@ -16,7 +16,7 @@ sessionsRouter.post('/', async (request, response) => {
             password
         });
 
-        // @ts-expect-error Aqui vai ocorrer um erro, mas estou ignorando
+        // @ts-expect-error
         delete user.password;
             
         return response.json({ user, token });
