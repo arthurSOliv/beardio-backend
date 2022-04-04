@@ -5,13 +5,13 @@ import AuthenticateUserService from "../services/AuthenticateUserService";
 const sessionsRouter = Router();
 
 sessionsRouter.post('/', async (request, response) => {
-    const { cpf, cnpj, password } = request.body;
+    const { cpfcnpj, password } = request.body;
 
     const authenticateUser = new AuthenticateUserService();
 
     const { user, token } = await authenticateUser.execute({
-        cpf,
-        cnpj,
+        cpf: String(cpfcnpj).length === 11 ? cpfcnpj : null,
+        cnpj: String(cpfcnpj).length  !== 11 ? cpfcnpj : null,
         password
     });
 
