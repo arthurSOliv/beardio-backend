@@ -35,7 +35,7 @@ class CreateAppointmentService {
             throw new AppError("Não é possível agendar um horário fora do horário de funcionamento.");
         }
 
-        const findAppointmentInSameDate = await this.appointmentsRepository.findByDate(appointmentDate);
+        const findAppointmentInSameDate = await this.appointmentsRepository.findByDate(appointmentDate, provider_id);
 
         if (findAppointmentInSameDate) {
             throw new AppError('Esse horário já foi agendado!');

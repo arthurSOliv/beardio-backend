@@ -1,4 +1,5 @@
 import { getRepository, Repository } from 'typeorm';
+import { classToClass } from "class-transformer";
 
 import IClientRepository from '@modules/users/repositories/IClientRepository';
 import ICreateClientDTO from '@modules/users/dtos/ICreateClientDTO';
@@ -6,12 +7,21 @@ import ICreateClientDTO from '@modules/users/dtos/ICreateClientDTO';
 import ICompleteUserDTO from '@modules/users/dtos/ICompleteUserDTO';
 
 import Client from '../entities/Client';
+import User from '../entities/User';
 
+interface IResponse {
+    user: User;
+    id: string;
+    cpf?: string;
+    cnpj?: string;
+}
 class ClientsRepository implements IClientRepository {
     private ormRepository: Repository<Client>;
+    private ormUserRepository: Repository<User>;
     
     constructor() {
         this.ormRepository = getRepository(Client);
+        this.ormUserRepository = getRepository(User);
     }
 
     public async findByCpf(cpf: string): Promise<Client | undefined> {
@@ -31,20 +41,27 @@ class ClientsRepository implements IClientRepository {
     }
 
     public async findByCpfJoinUser(cpf: string): Promise<ICompleteUserDTO | undefined> {
-        const client: any = await this.ormRepository.findOne({ relations: ['user'], where: { cpf } });
+        const client: Client | undefined = await this.ormRepository.findOne({ where: { cpf } });
+        if(client) {
+            const user: User | undefined = await this.ormUserRepository.findOne({ where: { id: client.user_id } });
 
-        const completeUser: ICompleteUserDTO = {
-            id: client.id,
-            user_id: client.user_id,
-            email: client.user.email,
-            name: client.user.name,
-            cpf: client.cpf,
-            cnpj: client.cnpj,
-            avatar: client.user.avatar,
-            password: client.user.password,
+            if(user) {
+                const formattedUser = classToClass(user);
+                const completeUser: ICompleteUserDTO = {
+                    id: client.id,
+                    user_id: client.user_id,
+                    email: formattedUser.email,
+                    name: formattedUser.name,
+                    cpf: client.cpf,
+                    avatar: formattedUser.avatar,
+                    password: formattedUser.password,
+                }
+        
+                return completeUser;
+            }
         }
 
-        return completeUser;
+        return undefined;
     }
 
     public async create(clientData: ICreateClientDTO): Promise<Client> {

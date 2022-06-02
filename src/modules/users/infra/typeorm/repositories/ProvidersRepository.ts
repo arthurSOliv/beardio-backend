@@ -1,4 +1,5 @@
 import { getRepository, Repository, Not } from 'typeorm';
+import { classToClass } from 'class-transformer';
 
 import IProviderRepository from '@modules/users/repositories/IProviderRepository';
 import ICreateProviderDTO from '@modules/users/dtos/ICreateProviderDTO';
@@ -6,12 +7,15 @@ import ICreateProviderDTO from '@modules/users/dtos/ICreateProviderDTO';
 import ICompleteUserDTO from '@modules/users/dtos/ICompleteUserDTO';
 
 import Provider from '../entities/Provider';
+import User from '../entities/User';
 
 class ProvidersRepository implements IProviderRepository {
     private ormRepository: Repository<Provider>;
+    private ormUserRepository: Repository<User>;
     
     constructor() {
         this.ormRepository = getRepository(Provider);
+        this.ormUserRepository = getRepository(User);
     }
 
     public async findByCnpj(cnpj: string): Promise<Provider | undefined> {
@@ -31,19 +35,27 @@ class ProvidersRepository implements IProviderRepository {
     }
 
     public async findByCnpjJoinUser(cpf: string): Promise<ICompleteUserDTO | undefined> {
-        const provider: any = await this.ormRepository.findOne({ relations: ['user'], where: { cpf } });
+        const provider: any = await this.ormRepository.findOne({  where: { cpf } });
+        if(provider) {
+            const user: User | undefined = await this.ormUserRepository.findOne({ where: { id: provider.user_id } });
 
-        const completeUser: ICompleteUserDTO = {
-            id: provider.id,
-            user_id: provider.user_id,
-            email: provider.user.email,
-            name: provider.user.name,
-            cnpj: provider.cnpj,
-            avatar: provider.user.avatar,
-            password: provider.user.password,
+            if(user) {
+                const formattedUser = classToClass(user);
+                const completeUser: ICompleteUserDTO = {
+                    id: provider.id,
+                    user_id: provider.user_id,
+                    email: formattedUser.email,
+                    name: formattedUser.name,
+                    cnpj: provider.cnpj,
+                    avatar: formattedUser.avatar,
+                    password: formattedUser.password,
+                }
+        
+                return completeUser;
+            }
         }
 
-        return completeUser;
+        return undefined;
     }
 
     public async findAllProvidersJoinUser(except_user_id?: string): Promise<ICompleteUserDTO[]> {
