@@ -1,5 +1,4 @@
 import { getRepository, Repository } from 'typeorm';
-import { classToClass } from "class-transformer";
 
 import IClientRepository from '@modules/users/repositories/IClientRepository';
 import ICreateClientDTO from '@modules/users/dtos/ICreateClientDTO';
@@ -46,7 +45,7 @@ class ClientsRepository implements IClientRepository {
             const user: User | undefined = await this.ormUserRepository.findOne({ where: { id: client.user_id } });
 
             if(user) {
-                const formattedUser = classToClass(user);
+                const formattedUser = user;
                 const completeUser: ICompleteUserDTO = {
                     id: client.id,
                     user_id: client.user_id,

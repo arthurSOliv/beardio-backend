@@ -15,6 +15,7 @@ const providerAppointmentsController = new ProviderAppointmentsController();
 providersRouter.use(ensureAuthenticated);
 
 providersRouter.get('/', providersController.list);
+providersRouter.get('/get/:user_id', providersController.findById);
 providersRouter.get('/me', providerAppointmentsController.list);
 providersRouter.get('/:provider_id/day-availability', providerDayAvailabilityController.list);
 providersRouter.get('/:provider_id/month-availability', providerMonthAvailabilityController.list);

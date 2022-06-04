@@ -21,6 +21,16 @@ class ListProvidersService {
         
         return providers;
     }
+
+    public async listOne(user_id: string): Promise<ICompleteUserDTO> {
+        const provider = await this.providersRepository.findByUserIdJoinUser(user_id);
+
+        if(!provider) {
+            throw new AppError('Provider not found.');
+        }
+        
+        return provider;
+    }
 }
 
 export default ListProvidersService;

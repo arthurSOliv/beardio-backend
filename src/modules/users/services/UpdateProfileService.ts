@@ -2,8 +2,6 @@ import path from 'path';
 import fs from 'fs';
 import { injectable, inject } from 'tsyringe';
 
-import uploadConfig from '@config/upload';
-
 import User from '../infra/typeorm/entities/User';
 import IUserRepository from '../repositories/IUserRepository';
 import IHashProvider from '../providers/IHashProvider/models/IHashProvider';
@@ -51,7 +49,9 @@ class UpdateProfileService {
             user.password = await this.hashProvider.generateHash(password);
         }
 
-        return this.usersRepository.save(user);
+        await this.usersRepository.save(user);
+
+        return user;
     }
 }
 

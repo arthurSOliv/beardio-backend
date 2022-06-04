@@ -1,5 +1,4 @@
 import { getRepository, Repository, Not } from 'typeorm';
-import { classToClass } from 'class-transformer';
 
 import IProviderRepository from '@modules/users/repositories/IProviderRepository';
 import ICreateProviderDTO from '@modules/users/dtos/ICreateProviderDTO';
@@ -40,7 +39,31 @@ class ProvidersRepository implements IProviderRepository {
             const user: User | undefined = await this.ormUserRepository.findOne({ where: { id: provider.user_id } });
 
             if(user) {
-                const formattedUser = classToClass(user);
+                const formattedUser = user;
+                const completeUser: ICompleteUserDTO = {
+                    id: provider.id,
+                    user_id: provider.user_id,
+                    email: formattedUser.email,
+                    name: formattedUser.name,
+                    cnpj: provider.cnpj,
+                    avatar: formattedUser.avatar,
+                    password: formattedUser.password,
+                }
+        
+                return completeUser;
+            }
+        }
+
+        return undefined;
+    }
+
+    public async findByUserIdJoinUser(user_id: string): Promise<ICompleteUserDTO | undefined> {
+        const provider: any = await this.ormRepository.findOne({  where: { user_id } });
+        if(provider) {
+            const user: User | undefined = await this.ormUserRepository.findOne({ where: { id: provider.user_id } });
+
+            if(user) {
+                const formattedUser = user;
                 const completeUser: ICompleteUserDTO = {
                     id: provider.id,
                     user_id: provider.user_id,
@@ -76,7 +99,6 @@ class ProvidersRepository implements IProviderRepository {
                 name: provider.user.name,
                 cnpj: provider.cnpj,
                 avatar: provider.user.avatar,
-                password: provider.user.password,
             }
 
             completeProviders.push(providerComplete);

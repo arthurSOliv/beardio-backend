@@ -17,6 +17,12 @@ class FakeAppointmentsRepository implements IAppointmentsRepository {
         return findAppointment;
     }
 
+    public async findById(appointment_id: string): Promise<Appointment | undefined> {
+        const findAppointment = this.appointments.find(appointment => appointment.id === appointment_id);
+
+        return findAppointment;
+    }
+
     public async findAllInMonthFromProvider({ provider_id, month, year }: IFindAllInMonthFromProviderDTO): Promise<Appointment[]> {
         const appointments = this.appointments.filter(appointment => {
             appointment.provider_id === provider_id &&
@@ -28,6 +34,17 @@ class FakeAppointmentsRepository implements IAppointmentsRepository {
     }
 
     public async findAllInDayFromProvider({ provider_id, day, month, year }: IFindAllInDayFromProviderDTO): Promise<Appointment[]> {
+        const appointments = this.appointments.filter(appointment => {
+            appointment.provider_id === provider_id &&
+            getDate(appointment.date) + 1 === day &&
+            getMonth(appointment.date) + 1 === month &&
+            getYear(appointment.date) === year;
+        });
+
+        return appointments;
+    }
+
+    public async findAllInDayFromClient({ provider_id, day, month, year }: IFindAllInDayFromProviderDTO): Promise<Appointment[]> {
         const appointments = this.appointments.filter(appointment => {
             appointment.provider_id === provider_id &&
             getDate(appointment.date) + 1 === day &&
@@ -50,6 +67,20 @@ class FakeAppointmentsRepository implements IAppointmentsRepository {
         this.appointments.push(appointment);
 
         return appointment;
+    }
+
+    public async save(appointment: Appointment): Promise<Appointment> {
+        const findAppointmentIndex = this.appointments.findIndex(findAppointment => findAppointment.id === appointment.id);
+
+        this.appointments[findAppointmentIndex] = appointment;
+
+        return appointment;
+    }
+
+    public async delete(appointment_id: string): Promise<void> {
+        const findAppointmentIndex = this.appointments.findIndex(findAppointment => findAppointment.id === appointment_id);
+
+        this.appointments.splice(findAppointmentIndex, 1);
     }
 }
 

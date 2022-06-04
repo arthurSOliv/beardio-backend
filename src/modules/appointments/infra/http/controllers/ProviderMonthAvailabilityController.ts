@@ -17,6 +17,6 @@ export default class ProviderMonthAvailabilityController {
             year: Number(year)
         });
         
-        return response.json({ availability });
+        return response.json(availability);
     }
 }

@@ -17,4 +17,8 @@ appointmentsRouter.use(ensureAuthenticated);
 
 appointmentsRouter.post('/', appointmentController.create);
 
+appointmentsRouter.put('/', appointmentController.update);
+
+appointmentsRouter.delete('/', appointmentController.delete);
+
 export default appointmentsRouter;

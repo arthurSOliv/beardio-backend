@@ -47,6 +47,30 @@ class FakeProvidersRepository implements IProviderRepository {
         return completeUser;
     }
 
+    public async findByUserIdJoinUser(user_id: string): Promise<ICompleteUserDTO | undefined> {
+        const findProvider = this.providers.find(provider => provider.user_id === user_id);
+
+        let findUser: User | undefined;
+        let completeUser: ICompleteUserDTO | undefined = undefined;
+
+        if(findProvider) {
+            findUser = this.users.find(user => user.id === findProvider.user_id);
+
+            if(findUser) {
+                completeUser = {
+                    id: findProvider.id,
+                    name: findUser.name,
+                    email: findUser.email,
+                    password: findUser.password,
+                    user_id: findUser.id,
+                    cnpj: findProvider.cnpj
+                }
+            }
+        }
+
+        return completeUser;
+    }
+
     public async findAllProvidersJoinUser(except_user_id: string): Promise<ICompleteUserDTO[]> {
         let { providers } = this;
         let completeUsers: ICompleteUserDTO[] = [];

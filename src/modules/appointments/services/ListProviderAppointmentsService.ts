@@ -23,13 +23,26 @@ class ListProviderAppointmentsService {
     year,
     month,
   }: IRequest): Promise<Appointment[]> {
-    const appointments = await this.appointmentsRepositiry.findAllInDayFromProvider(
-    {
-        provider_id,
-        day,
-        year,
-        month,
-    },
+    let appointments = await this.appointmentsRepositiry.findAllInDayFromProvider(
+      {
+          provider_id,
+          day,
+          year,
+          month,
+      },
+    );
+
+    if(appointments.length > 0) {
+      return appointments;
+    }
+
+    appointments = await this.appointmentsRepositiry.findAllInDayFromClient(
+      {
+          provider_id,
+          day,
+          year,
+          month,
+      },
     );
 
     return appointments;

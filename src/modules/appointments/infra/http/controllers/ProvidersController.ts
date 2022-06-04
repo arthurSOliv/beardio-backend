@@ -11,6 +11,16 @@ export default class ProvidersController {
 
         const providers = await listProvidersService.execute(user_id);
         
-        return response.json({ providers });
+        return response.json(providers);
+    }
+
+    public async findById(request: Request, response: Response): Promise<Response> {
+        const user_id = request.params.user_id;
+
+        const listProvidersService = container.resolve(ListProvidersService);
+
+        const provider = await listProvidersService.listOne(user_id);
+        
+        return response.json(provider);
     }
 }

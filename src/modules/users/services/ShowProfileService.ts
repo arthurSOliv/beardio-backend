@@ -22,21 +22,23 @@ class ShowProfileService {
 
     public async execute(user_id: string): Promise<ICompleteUserDTO> {
         const user = await this.usersRepository.findById(user_id);
-
+        
         if(!user) {
             throw new AppError('Usuário não encontrado.');
         }
 
+        const formattedUser = user;
+        
         const client = await this.clientsRepository.findByUserId(user_id);
 
         if(client) {
             const completeUser:ICompleteUserDTO = {
                 id: client.id,
-                user_id: user.id,
-                email: user.email,
-                name: user.name,
+                user_id: formattedUser.id,
+                email: formattedUser.email,
+                name: formattedUser.name,
                 cpf: client.cpf,
-                avatar: user.avatar,
+                avatar: formattedUser.avatar,
             }
 
             return completeUser;
